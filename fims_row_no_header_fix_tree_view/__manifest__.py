@@ -9,7 +9,7 @@
     'name': 'Row Number Header Fix Tree View',
     'category': 'Report',
     'summary': 'Show Row Number and Fixed Header in Tree/List View',
-    'version': '14.0.1.0',
+    'version': '13.0.1.0',
     'license': 'OPL-1',
     'description': """User allow to see header even there is long scrolling datas, in tree view.""",
     'depends': ['base'],

@@ -5,7 +5,7 @@
         <field name="model">login.image</field>
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">
-            <tree string="faculty list">
+            <tree string="Image">
                 <field name="name"/>
             </tree>
         </field>

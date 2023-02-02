@@ -1,13 +1,19 @@
 # -*- encoding: utf-8 -*-
 
 import logging
+import werkzeug
 import werkzeug.exceptions
 import werkzeug.utils
-from werkzeug.urls import iri_to_uri
+import werkzeug.wrappers
+import werkzeug.wsgi
+from werkzeug.urls import url_encode, iri_to_uri
+
+
 import odoo
+import odoo.modules.registry
 from odoo.tools.translate import _
 from odoo import http, tools
-from odoo.http import request, Response
+from odoo.http import content_disposition, dispatch_rpc, request, Response
 
 _logger = logging.getLogger(__name__)
 
@@ -17,13 +23,11 @@ _logger = logging.getLogger(__name__)
 
 db_monodb = http.db_monodb
 
-
-# override
 def _get_login_redirect_url(uid, redirect=None):
     """ Decide if user requires a specific post-login redirect, e.g. for 2FA, or if they are
     fully logged and can proceed to the requested URL
     """
-    if request.session.uid:  # fully logged
+    if request.session.uid: # fully logged
         return redirect or '/web'
 
     # partial session (MFA)
@@ -37,7 +41,6 @@ def _get_login_redirect_url(uid, redirect=None):
     return parsed.replace(query=werkzeug.urls.url_encode(qs)).to_url()
 
 
-# override
 def abort_and_redirect(url):
     r = request.httprequest
     response = werkzeug.utils.redirect(url, 302)
@@ -45,8 +48,14 @@ def abort_and_redirect(url):
     werkzeug.exceptions.abort(response)
 
 
-# override
 def ensure_db(redirect='/web/database/selector'):
+    # This helper should be used in web client auth="none" routes
+    # if those routes needs a db to work with.
+    # If the heuristics does not find any database, then the users will be
+    # redirected to db selector or any url specified by `redirect` argument.
+    # If the db is taken out of a query parameter, it will be checked against
+    # `http.db_filter()` in order to ensure it's legit and thus avoid db
+    # forgering that could lead to xss attacks.
     db = request.params.get('db') and request.params.get('db').strip()
 
     # Ensure db is legit
@@ -96,11 +105,9 @@ def ensure_db(redirect='/web/database/selector'):
 
 class Home(http.Controller):
 
-    # override
     def _login_redirect(self, uid, redirect=None):
         return _get_login_redirect_url(uid, redirect)
 
-    # override
     @http.route('/web/login', type='http', auth="none")
     def web_login(self, redirect=None, **kw):
         ensure_db()
@@ -140,10 +147,10 @@ class Home(http.Controller):
             values['disable_database_manager'] = True
 
         param_obj = request.env['ir.config_parameter'].sudo()
+        style = param_obj.get_param('login_background.style')
         values['reset_password_enabled'] = param_obj.get_param('auth_signup.reset_password')
         values['signup_enabled'] = param_obj.get_param('auth_signup.invitation_scope') == 'b2c'
         values['disable_footer'] = param_obj.get_param('disable_footer')
-        style = param_obj.get_param('login_background.style')
         background = param_obj.get_param('login_background.background')
         values['background_color'] = param_obj.get_param('login_background.color')
         background_image = param_obj.get_param('login_background.background_image')
@@ -173,8 +180,6 @@ class Home(http.Controller):
 
 
 class Website(Home):
-
-    # override
     @http.route(website=True, auth="public", sitemap=False)
     def web_login(self, *args, **kw):
         return super().web_login(*args, **kw)

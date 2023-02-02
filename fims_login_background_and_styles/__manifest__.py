@@ -1,8 +1,7 @@
 # -*- encoding: utf-8 -*-
 {
     'name': 'Login Background And Styles',
-    'summary': 'The new configurable Odoo Web Login Screen',
-    'version': '14.0.2.0.0',
+    'version': '13.0.2.0.0',
     'category': 'website',
     'summary': """
     You can customised login page like add background image or color and change position of login form.

@@ -82,15 +82,15 @@ odoo.define('fims_row_no_header_fix_tree_view.row_in_list', function (require) {
         _renderRow: function (record) {
         	var $row = this._super(record);
         	if (this.mode !== 'edit' && this.state.groupedBy.length==0){
-                var index = this.state.data.findIndex(function(e){return record.id===e.id})
-                if(index === 0) {
-                    this.state.data.new_index = 0
-                }
+    	    	var index = this.state.data.findIndex(function(e){return record.id===e.id})
+    	    	if(index === 0) {
+    	    	    this.state.data.new_index = 0
+    	    	}
                 if(record.data.display_type !== 'line_section' && record.data.display_type !== 'line_note'){
                     this.state.data.new_index += 1
                     $row.prepend($("<th class='o_list_row_count_fims'>").html(this.state.data.new_index));
                 }
-            }
+        	}
         	return $row;
 
         },
