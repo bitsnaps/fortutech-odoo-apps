@@ -1,4 +1,4 @@
-.o_list_view .o_list_table thead {
+thead{
     position: sticky !important;
     top: 0px !important;
     z-index: 999 !important;

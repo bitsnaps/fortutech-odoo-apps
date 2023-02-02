@@ -6,5 +6,5 @@ class LoginImage(models.Model):
     _name = 'login.image'
     _rec_name = 'name'
 
-    image = fields.Binary(string=u"图片")
-    name = fields.Char(string=u"名字")
+    image = fields.Binary(string="Image")
+    name = fields.Char(string="Name")

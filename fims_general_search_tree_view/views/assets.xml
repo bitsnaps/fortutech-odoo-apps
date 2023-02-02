@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="assets_backend" name="stickyheader_Theme" inherit_id="web.assets_backend">
-        <xpath expr="." position="inside">
-            <script type="text/javascript" src="/fims_general_search_tree_view/static/src/js/list_search.js"/>
-            <link rel="stylesheet" type="text/css" href="/fims_general_search_tree_view/static/src/css/list_search.css"/>
-        </xpath>
-    </template>
+    <!-- Assets -->
+	<record id="fims_general_search_tree_view.assets_backend_js" model="ir.asset">
+		<field name="name">stickyheader_Theme</field>
+		<field name="bundle">web.assets_backend</field>
+		<field name="path">/fims_general_search_tree_view/static/src/js/list_search.js</field>
+	</record>
+	
+	<record id="fims_general_search_tree_view.assets_backend_css" model="ir.asset">
+		<field name="name">stickyheader_Theme</field>
+		<field name="bundle">web.assets_backend</field>
+		<field name="path">/fims_general_search_tree_view/static/src/css/list_search.css</field>
+	</record>
 </odoo>

@@ -1,13 +1,17 @@
 # -*- encoding: utf-8 -*-
 
 import logging
+import werkzeug
 import werkzeug.exceptions
 import werkzeug.utils
-from werkzeug.urls import iri_to_uri
+import werkzeug.wrappers
+import werkzeug.wsgi
+from werkzeug.urls import url_encode, iri_to_uri
 import odoo
+import odoo.modules.registry
 from odoo.tools.translate import _
 from odoo import http, tools
-from odoo.http import request, Response
+from odoo.http import content_disposition, dispatch_rpc, request, Response
 
 _logger = logging.getLogger(__name__)
 
@@ -106,7 +110,7 @@ class Home(http.Controller):
         ensure_db()
         request.params['login_success'] = False
         if request.httprequest.method == 'GET' and redirect and request.session.uid:
-            return http.redirect_with_hash(redirect)
+            return request.redirect(redirect)
 
         if not request.uid:
             request.uid = odoo.SUPERUSER_ID
@@ -120,9 +124,10 @@ class Home(http.Controller):
         if request.httprequest.method == 'POST':
             old_uid = request.uid
             try:
-                uid = request.session.authenticate(request.session.db, request.params['login'], request.params['password'])
+                uid = request.session.authenticate(request.session.db, request.params['login'],
+                                                   request.params['password'])
                 request.params['login_success'] = True
-                return http.redirect_with_hash(self._login_redirect(uid, redirect=redirect))
+                return request.redirect(self._login_redirect(uid, redirect=redirect))
             except odoo.exceptions.AccessDenied as e:
                 request.uid = old_uid
                 if e.args == odoo.exceptions.AccessDenied().args:
